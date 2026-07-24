@@ -11,15 +11,29 @@ app.get("/", (req, res) => {
   res.send("Quiz Builder API is running!");
 });
 
+
+
 app.get("/quizzes", async (req, res) => {
   try {
     const quizzes = await prisma.quiz.findMany({
-      include: {
-        questions: true,
+      select: {
+        id: true,
+        title: true,
+        _count: {
+          select: {
+            questions: true,
+          },
+        },
       },
     });
 
-    res.json(quizzes);
+    const result = quizzes.map((quiz) => ({
+      id: quiz.id,
+      title: quiz.title,
+      questionsCount: quiz._count.questions,
+    }));
+
+    res.json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -46,11 +60,11 @@ app.get("/quizzes/:id", async (req, res) => {
     res.json(quiz);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 });
-
-
 
 app.post("/quizzes", async (req, res) => {
   try {
