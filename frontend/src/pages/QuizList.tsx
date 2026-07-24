@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getQuizzes } from "../services/api";
+import { deleteQuiz, getQuizzes } from "../services/api";
 import type { Quiz } from "../types/quiz";
 import { Link } from "react-router-dom";
 
@@ -8,20 +8,29 @@ function QuizList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadQuizzes() {
-      try {
-        const data = await getQuizzes();
-        setQuizzes(data);
-      } catch {
-        setError("Failed to load quizzes.");
-      } finally {
-        setLoading(false);
-      }
-    }
+async function loadQuizzes() {
+  try {
+    const data = await getQuizzes();
+    setQuizzes(data);
+  } catch {
+    setError("Failed to load quizzes.");
+  } finally {
+    setLoading(false);
+  }
+}
 
-    loadQuizzes();
-  }, []);
+useEffect(() => {
+  loadQuizzes();
+}, []);
+
+async function handleDelete(id: number) {
+  try {
+    await deleteQuiz(id);
+    await loadQuizzes();
+  } catch {
+    setError("Failed to delete quiz.");
+  }
+}
 
   if (loading) {
     return <h2>Loading...</h2>;
@@ -46,13 +55,20 @@ return (
     ) : (
       <ul>
         {quizzes.map((quiz) => (
-          <li key={quiz.id}>
-            <Link to={`/quizzes/${quiz.id}`}>
-              {quiz.title}
-            </Link>
+         <li key={quiz.id}>
+  <Link to={`/quizzes/${quiz.id}`}>
+    {quiz.title}
+  </Link>
 
-            {" "}({quiz.questionsCount} questions)
-          </li>
+  {" "}({quiz.questionsCount} questions)
+
+  <button
+    style={{ marginLeft: "10px" }}
+    onClick={() => handleDelete(quiz.id)}
+  >
+    Delete
+  </button>
+</li>
         ))}
       </ul>
     )}
