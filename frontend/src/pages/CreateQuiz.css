@@ -1,0 +1,26 @@
+.create-quiz {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.create-quiz h1 {
+  margin-bottom: 24px;
+}
+
+.create-quiz h2 {
+  margin: 24px 0 16px;
+}
+
+.quiz-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.question-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fafafa;
+  padding: 16px;
+}
